@@ -33,25 +33,34 @@ public class Myserlet extends HttpServlet {
         String name = req.getParameter("name");
         String sex = req.getParameter("sex");
         System.out.println(id + " " + name + " " + sex);
+        PrintWriter writer = resp.getWriter();
         try {
             Class.forName("org.h2.Driver");
             connection = DriverManager.getConnection("jdbc:h2:tcp://localhost/~/test", "sa", null);
             Statement createStatement = connection.createStatement();
             int ex = createStatement.executeUpdate("INSERT INTO TEST (ID,NAME,SEX) VALUES ('" + id + "','" + name + "','" + sex + "')");
-            PrintWriter writer = resp.getWriter();
+            
             writer.append("insert row = " + ex);
         } catch (Exception e) {
             Logger.getLogger(Myserlet.class.getName()).log(Level.SEVERE, null, e);
+            writer.append(e.getMessage());
         } finally {
             if (connection != null) {
                 try {
                     connection.close();
+                    
                 } catch (SQLException e) {
                     Logger.getLogger(Myserlet.class.getName()).log(Level.SEVERE, null, e);
+                   
                 }
             }
         }
 
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        doGet(req, resp);
     }
 
 }
